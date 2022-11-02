@@ -4,11 +4,13 @@ import reportWebVitals from './reportWebVitals';
 import './index.css';
 
 import '@rainbow-me/rainbowkit/styles.css';
-import { getDefaultWallets, RainbowKitProvider } from '@rainbow-me/rainbowkit';
-import { chain, configureChains, createClient, WagmiConfig } from 'wagmi';
-import { alchemyProvider } from 'wagmi/providers/alchemy';
-import { publicProvider } from 'wagmi/providers/public';
+import {connectorsForWallets, RainbowKitProvider} from '@rainbow-me/rainbowkit';
+import {chain, configureChains, createClient, WagmiConfig} from 'wagmi';
+import {alchemyProvider} from 'wagmi/providers/alchemy';
+import {publicProvider} from 'wagmi/providers/public';
 import App from './App';
+import {subWalletWallet} from "./subwallet";
+import {metaMaskWallet, rainbowWallet} from "@rainbow-me/rainbowkit/wallets";
 
 const { chains, provider, webSocketProvider } = configureChains(
   [
@@ -26,10 +28,20 @@ const { chains, provider, webSocketProvider } = configureChains(
   ]
 );
 
-const { connectors } = getDefaultWallets({
-  appName: 'RainbowKit demo',
-  chains,
-});
+const connectors = connectorsForWallets([
+    {
+      groupName: 'Polkadot-EVM',
+      wallets: [
+        subWalletWallet({ chains })
+      ],
+    },
+    {
+      groupName: 'EVM',
+      wallets: [
+        metaMaskWallet({ chains })
+      ],
+    },
+  ]);
 
 const wagmiClient = createClient({
   autoConnect: true,
